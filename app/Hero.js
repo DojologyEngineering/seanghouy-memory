@@ -4,6 +4,10 @@ import Ornament from "./Ornament";
 export default function Hero({ children }) {
   return (
     <header className="hero">
+      <div className="org">
+        <span className="org-logo" role="img" aria-label="Australia Awards" />
+        <span className="org-name">Cambodia · Scholar cohort 2027</span>
+      </div>
       <div className="portrait">
         <img src={site.photo} alt={`Portrait of ${site.honoree}`} />
       </div>
