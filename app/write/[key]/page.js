@@ -13,9 +13,9 @@ export default async function WritePage({ params }) {
   const messages = await getMessages();
   return (
     <main className="wrap">
-      <Hero>
+      <Hero title="Messages for Seanghouy">
         <p className="intro">
-          Leave a few words for {site.daughter} and her family. Your message will appear on the memorial page with your name, photo and the time you wrote it.
+          Share a memory, a prayer or a few words of comfort. Your message will be placed inside her condolence envelope with your name, photo and the time you wrote it.
         </p>
       </Hero>
       <WriteForm adminKey={key} initial={messages} />
