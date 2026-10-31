@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // Link-preview crawlers (Telegram, Messenger, WhatsApp, X, Slack, Discord, LINE, Viber, ...).
 // Give them nothing, so a pasted link shows no title, text or image.
 const PREVIEW_BOTS =
-  /TelegramBot|facebookexternalhit|Facebot|meta-externalagent|WhatsApp|Twitterbot|Slackbot|Discordbot|LinkedInBot|Pinterest|SkypeUriPreview|Teams|Viber|Line\/|LineBot|Zalo|KakaoTalk|Snapchat|redditbot|Embedly|iframely|vkShare|Applebot|Google-PageRenderer|bitlybot|Mastodon|Bluesky/i;
+  /TelegramBot|facebookexternalhit|Facebot|meta-externalagent|WhatsApp\/[0-9.]+ [AWi]|Twitterbot|Slackbot|Discordbot|LinkedInBot|Pinterestbot|SkypeUriPreview|line-poker|kakaotalk-scrap|Zalo-?bot|redditbot|Embedly|iframely|vkShare|bitlybot|Mastodon\/|Bluesky Cardyb|Applebot|Google-PageRenderer/i;
 
 export function middleware(req) {
   const ua = req.headers.get("user-agent") || "";
