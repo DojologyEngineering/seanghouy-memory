@@ -15,7 +15,7 @@ export default function Hero({ children }) {
       <p className="blessing">{site.blessing}</p>
       <h1>{site.honoree}</h1>
       <p className="name-km" lang="km">{site.honoreeKhmer}</p>
-      <div className="dates">{site.born} &nbsp;·&nbsp; {site.died}</div>
+      <div className="dates"><span>{site.born}</span><span className="sep" /><span>{site.died}</span></div>
       {children}
       <Ornament />
     </header>
