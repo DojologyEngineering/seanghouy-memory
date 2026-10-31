@@ -8,13 +8,7 @@ const base = process.env.VERCEL_PROJECT_PRODUCTION_URL
 export const metadata = {
   metadataBase: new URL(base),
   title: `For ${site.daughterShort}, with our deepest sympathy`,
-  description: site.intro,
   robots: { index: false, follow: false },
-  openGraph: {
-    title: `For ${site.daughterShort}, with our deepest sympathy`,
-    description: `In loving memory of ${site.honoree}, ${site.born} – ${site.died}. From the AAS Scholar cohort 2027.`,
-    images: ["/og.jpg"],
-  },
 };
 
 export const viewport = { themeColor: "#1c1b1a" };

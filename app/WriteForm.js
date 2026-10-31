@@ -72,6 +72,19 @@ export default function WriteForm({ adminKey, initial = [] }) {
     if (res.ok) setMessages((prev) => prev.filter((x) => x.id !== m.id));
   }
 
+  async function onEdit(m) {
+    const text = prompt(`Edit the message from ${m.name}:`, m.message);
+    if (text === null || !text.trim() || text === m.message) return;
+    const res = await fetch("/api/messages", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ key: adminKey, id: m.id, message: text }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (res.ok) setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, message: body.message } : x)));
+    else alert(body.error || "Could not save the change.");
+  }
+
   return (
     <>
       <div className="panel">
@@ -112,12 +125,12 @@ export default function WriteForm({ adminKey, initial = [] }) {
       </div>
       {adminKey && (
         <>
-          <p className="admin-note">Admin view: only people with this private link can remove messages.</p>
+          <p className="admin-note">Admin view: only people with this private link can edit or remove messages.</p>
           <h2 className="section-title" style={{ marginTop: 56 }}>Shared so far</h2>
           <section className="list">
             {messages.length === 0 && <p className="empty">No messages yet.</p>}
             {messages.map((m, i) => (
-              <MessageCard key={m.id} m={m} index={i} onDelete={onDelete} />
+              <MessageCard key={m.id} m={m} index={i} onDelete={onDelete} onEdit={onEdit} />
             ))}
           </section>
         </>
