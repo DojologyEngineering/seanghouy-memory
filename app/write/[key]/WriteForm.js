@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import MessageCard from "../../MessageCard";
 
 // Shrink photos in the browser so uploads stay small and fast.
@@ -21,17 +21,24 @@ export default function WriteForm({ adminKey, initial }) {
   const [preview, setPreview] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [status, setStatus] = useState({ busy: false, error: "", ok: "" });
+  const fileRef = useRef(null);
 
   async function onPhoto(e) {
     const file = e.target.files?.[0];
-    if (!file) return setPhoto(null), setPreview(null);
+    if (!file) return;
     try {
       const small = await resizeImage(file);
       setPhoto(small);
       setPreview(URL.createObjectURL(small));
     } catch {
-      setStatus({ busy: false, ok: "", error: "Could not read that photo. Try a JPG or PNG." });
+      setStatus({ busy: false, ok: "", error: "Could not read that photo. Please try a JPG or PNG." });
     }
+  }
+
+  function clearPhoto() {
+    setPhoto(null);
+    setPreview(null);
+    if (fileRef.current) fileRef.current.value = "";
   }
 
   async function onSubmit(e) {
@@ -49,13 +56,12 @@ export default function WriteForm({ adminKey, initial }) {
     }
     setMessages((prev) => [body, ...prev]);
     formEl.reset();
-    setPhoto(null);
-    setPreview(null);
-    setStatus({ busy: false, error: "", ok: "Thank you. Your message has been posted." });
+    clearPhoto();
+    setStatus({ busy: false, error: "", ok: "Thank you. Your message is now on the memorial page." });
   }
 
   async function onDelete(m) {
-    if (!confirm(`Delete the message from ${m.name}?`)) return;
+    if (!confirm(`Remove the message from ${m.name}?`)) return;
     const res = await fetch("/api/messages", {
       method: "DELETE",
       headers: { "content-type": "application/json" },
@@ -66,36 +72,47 @@ export default function WriteForm({ adminKey, initial }) {
 
   return (
     <>
-      <form onSubmit={onSubmit}>
-        <label>
-          Your name
-          <input type="text" name="name" required maxLength={80} />
-        </label>
-        <label>
-          Profile picture (optional)
-          <div className="photo-row">
-            {preview && <img className="avatar" src={preview} alt="" />}
-            <input type="file" name="photoFile" accept="image/*" onChange={onPhoto} />
+      <div className="panel">
+        <form onSubmit={onSubmit}>
+          <label className="field">
+            <span>Your name</span>
+            <input type="text" name="name" required maxLength={80} autoComplete="name" />
+          </label>
+          <div className="field">
+            <span>Your photo (optional)</span>
+            <div className="photo-pick">
+              {preview ? (
+                <img className="avatar lg" src={preview} alt="" />
+              ) : (
+                <div className="avatar lg" aria-hidden="true">+</div>
+              )}
+              <label className="ghost">
+                {preview ? "Change photo" : "Choose photo"}
+                <input ref={fileRef} type="file" name="photoFile" accept="image/*" onChange={onPhoto} />
+              </label>
+              {preview && <button type="button" className="ghost" onClick={clearPhoto}>Remove</button>}
+            </div>
           </div>
-        </label>
-        <label>
-          Your message
-          <textarea name="message" required maxLength={3000} />
-        </label>
-        <div>
-          <button type="submit" disabled={status.busy}>
-            {status.busy ? "Posting…" : "Post message"}
-          </button>
-        </div>
-        {status.error && <p className="error">{status.error}</p>}
-        {status.ok && <p className="ok">{status.ok}</p>}
-      </form>
+          <label className="field">
+            <span>Your message</span>
+            <textarea name="message" required maxLength={3000} placeholder="Share a memory, a prayer, or a few words of comfort…" />
+          </label>
+          <div className="actions">
+            <button className="primary" type="submit" disabled={status.busy}>
+              {status.busy ? "Sending…" : "Share message"}
+            </button>
+            {status.error && <p className="error">{status.error}</p>}
+            {status.ok && <p className="ok">{status.ok}</p>}
+          </div>
+        </form>
+      </div>
+      <p className="admin-note">Only people with this private link can add or remove messages.</p>
 
-      <h2>Posted messages</h2>
-      <p className="note">Only people with this link can delete messages.</p>
+      <h2 className="section-title" style={{ marginTop: 56 }}>Shared so far</h2>
       <section className="list">
-        {messages.map((m) => (
-          <MessageCard key={m.id} m={m} onDelete={onDelete} />
+        {messages.length === 0 && <p className="empty">No messages yet.</p>}
+        {messages.map((m, i) => (
+          <MessageCard key={m.id} m={m} index={i} onDelete={onDelete} />
         ))}
       </section>
     </>

@@ -1,0 +1,19 @@
+import { site } from "@/lib/config";
+import Ornament from "./Ornament";
+
+export default function Hero({ children }) {
+  return (
+    <header className="hero">
+      <div className="portrait">
+        <img src={site.photo} alt={`Portrait of ${site.honoree}`} />
+      </div>
+      <p className="blessing-km" lang="km">{site.blessingKhmer}</p>
+      <p className="blessing">{site.blessing}</p>
+      <h1>{site.honoree}</h1>
+      <p className="name-km" lang="km">{site.honoreeKhmer}</p>
+      <div className="dates">{site.born} &nbsp;·&nbsp; {site.died}</div>
+      {children}
+      <Ornament />
+    </header>
+  );
+}

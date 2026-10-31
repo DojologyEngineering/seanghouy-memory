@@ -11,20 +11,21 @@ function initials(name) {
     .join("");
 }
 
-export default function MessageCard({ m, onDelete }) {
+export default function MessageCard({ m, onDelete, index = 0 }) {
   // Format on the client so each reader sees their own local time.
   const [time, setTime] = useState("");
   useEffect(() => {
     setTime(
       new Date(m.createdAt).toLocaleString(undefined, {
-        day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit",
+        day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit",
       })
     );
   }, [m.createdAt]);
 
   return (
-    <article className="card">
-      <div className="card-head">
+    <article className="card" style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}>
+      <p className="body">{m.message}</p>
+      <div className="card-foot">
         {m.photoUrl ? (
           <img className="avatar" src={m.photoUrl} alt="" />
         ) : (
@@ -35,10 +36,9 @@ export default function MessageCard({ m, onDelete }) {
           <time className="time" dateTime={m.createdAt}>{time}</time>
         </div>
         {onDelete && (
-          <button className="link" onClick={() => onDelete(m)}>Delete</button>
+          <button className="link-danger" onClick={() => onDelete(m)}>Remove</button>
         )}
       </div>
-      <p className="body">{m.message}</p>
     </article>
   );
 }
