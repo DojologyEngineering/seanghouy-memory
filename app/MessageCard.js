@@ -11,7 +11,7 @@ function initials(name) {
     .join("");
 }
 
-export default function MessageCard({ m, onDelete, onEdit, index = 0 }) {
+export default function MessageCard({ m, onDelete, onEdit, onRemovePhoto, index = 0 }) {
   // Format on the client so each reader sees their own local time.
   const [time, setTime] = useState("");
   useEffect(() => {
@@ -37,6 +37,9 @@ export default function MessageCard({ m, onDelete, onEdit, index = 0 }) {
         </div>
         {onEdit && (
           <button className="link-edit" onClick={() => onEdit(m)}>Edit</button>
+        )}
+        {onRemovePhoto && m.photoUrl && (
+          <button className="link-danger" onClick={() => onRemovePhoto(m)}>Remove photo</button>
         )}
         {onDelete && (
           <button className="link-danger" onClick={() => onDelete(m)}>Remove</button>

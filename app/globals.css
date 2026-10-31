@@ -269,7 +269,7 @@ a.ghost { text-decoration: none; }
 .link-danger:hover { color: var(--danger); }
 .link-edit { margin-left: auto; font: inherit; font-size: 13px; cursor: pointer; background: none; border: 0; color: var(--muted); padding: 4px 0; }
 .link-edit:hover { color: var(--ink); }
-.link-edit + .link-danger { margin-left: 16px; }
+.link-edit + .link-danger, .link-danger + .link-danger { margin-left: 16px; }
 .error { color: var(--danger); font-size: 14px; margin: 0; }
 .ok { color: var(--accent); font-size: 14px; margin: 0; }
 .admin-note { text-align: center; font-size: 13px; color: var(--muted); margin: 14px 0 0; }

@@ -41,13 +41,13 @@ export async function DELETE(req) {
 }
 
 export async function PATCH(req) {
-  const { key, id, message } = await req.json();
+  const { key, id, message, removePhoto } = await req.json();
   if (!isAdminKey(key)) {
     return NextResponse.json({ error: "This link is not valid." }, { status: 401 });
   }
-  const text = String(message || "").trim().slice(0, 3000);
-  if (!text) return NextResponse.json({ error: "The message cannot be empty." }, { status: 400 });
-  const updated = await updateMessage(id, text);
+  const text = message === undefined ? undefined : String(message).trim().slice(0, 3000);
+  if (text === "") return NextResponse.json({ error: "The message cannot be empty." }, { status: 400 });
+  const updated = await updateMessage(id, { message: text, removePhoto: Boolean(removePhoto) });
   return updated
     ? NextResponse.json(updated)
     : NextResponse.json({ error: "Message not found." }, { status: 404 });

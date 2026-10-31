@@ -85,6 +85,16 @@ export default function WriteForm({ adminKey, initial = [] }) {
     else alert(body.error || "Could not save the change.");
   }
 
+  async function onRemovePhoto(m) {
+    if (!confirm(`Remove the photo from ${m.name}'s message?`)) return;
+    const res = await fetch("/api/messages", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ key: adminKey, id: m.id, removePhoto: true }),
+    });
+    if (res.ok) setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, photoUrl: null } : x)));
+  }
+
   return (
     <>
       <div className="panel">
@@ -130,7 +140,7 @@ export default function WriteForm({ adminKey, initial = [] }) {
           <section className="list">
             {messages.length === 0 && <p className="empty">No messages yet.</p>}
             {messages.map((m, i) => (
-              <MessageCard key={m.id} m={m} index={i} onDelete={onDelete} onEdit={onEdit} />
+              <MessageCard key={m.id} m={m} index={i} onDelete={onDelete} onEdit={onEdit} onRemovePhoto={onRemovePhoto} />
             ))}
           </section>
         </>
