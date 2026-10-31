@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import MessageCard from "../../MessageCard";
+import MessageCard from "./MessageCard";
 
 // Shrink photos in the browser so uploads stay small and fast.
 async function resizeImage(file, size = 400) {
@@ -16,11 +16,13 @@ async function resizeImage(file, size = 400) {
   return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
 }
 
-export default function WriteForm({ adminKey, initial }) {
+// Without adminKey this is the public form; with it, the admin view that can also remove messages.
+export default function WriteForm({ adminKey, initial = [] }) {
   const [messages, setMessages] = useState(initial);
   const [preview, setPreview] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [status, setStatus] = useState({ busy: false, error: "", ok: "" });
+  const [posted, setPosted] = useState(false);
   const fileRef = useRef(null);
 
   async function onPhoto(e) {
@@ -46,7 +48,6 @@ export default function WriteForm({ adminKey, initial }) {
     const formEl = e.currentTarget;
     const data = new FormData(formEl);
     data.delete("photoFile");
-    data.set("key", adminKey);
     if (photo) data.set("photo", photo, "photo.jpg");
     setStatus({ busy: true, error: "", ok: "" });
     const res = await fetch("/api/messages", { method: "POST", body: data });
@@ -58,6 +59,7 @@ export default function WriteForm({ adminKey, initial }) {
     formEl.reset();
     clearPhoto();
     setStatus({ busy: false, error: "", ok: "Thank you. Your message is now on the memorial page." });
+    setPosted(true);
   }
 
   async function onDelete(m) {
@@ -74,6 +76,7 @@ export default function WriteForm({ adminKey, initial }) {
     <>
       <div className="panel">
         <form onSubmit={onSubmit}>
+          <input className="hp" type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
           <label className="field">
             <span>Your name</span>
             <input type="text" name="name" required maxLength={80} autoComplete="name" />
@@ -103,18 +106,22 @@ export default function WriteForm({ adminKey, initial }) {
             </button>
             {status.error && <p className="error">{status.error}</p>}
             {status.ok && <p className="ok">{status.ok}</p>}
+            {posted && !adminKey && <a className="ghost" href="/">View the memorial page</a>}
           </div>
         </form>
       </div>
-      <p className="admin-note">Only people with this private link can add or remove messages.</p>
-
-      <h2 className="section-title" style={{ marginTop: 56 }}>Shared so far</h2>
-      <section className="list">
-        {messages.length === 0 && <p className="empty">No messages yet.</p>}
-        {messages.map((m, i) => (
-          <MessageCard key={m.id} m={m} index={i} onDelete={onDelete} />
-        ))}
-      </section>
+      {adminKey && (
+        <>
+          <p className="admin-note">Admin view: only people with this private link can remove messages.</p>
+          <h2 className="section-title" style={{ marginTop: 56 }}>Shared so far</h2>
+          <section className="list">
+            {messages.length === 0 && <p className="empty">No messages yet.</p>}
+            {messages.map((m, i) => (
+              <MessageCard key={m.id} m={m} index={i} onDelete={onDelete} />
+            ))}
+          </section>
+        </>
+      )}
     </>
   );
 }

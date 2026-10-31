@@ -247,3 +247,6 @@ input[type="text"]:focus, textarea:focus {
   .dates { gap: 10px; letter-spacing: 0.22em; font-size: 11px; }
   .dates .sep { width: 16px; }
 }
+
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+a.ghost { text-decoration: none; }

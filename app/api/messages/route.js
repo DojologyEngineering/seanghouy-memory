@@ -5,8 +5,9 @@ const MAX_PHOTO_BYTES = 4 * 1024 * 1024;
 
 export async function POST(req) {
   const form = await req.formData();
-  if (!isAdminKey(form.get("key"))) {
-    return NextResponse.json({ error: "This link is not valid." }, { status: 401 });
+  // Bots fill in the hidden "website" field; people never see it.
+  if (form.get("website")) {
+    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 400 });
   }
   const name = String(form.get("name") || "").trim().slice(0, 80);
   const message = String(form.get("message") || "").trim().slice(0, 3000);
