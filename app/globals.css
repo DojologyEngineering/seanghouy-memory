@@ -171,8 +171,7 @@ img { display: block; max-width: 100%; }
   font-size: 16.5px; line-height: 1.85; color: var(--ink-soft);
   text-wrap: pretty;
 }
-.blessing-km { margin: 26px 0 0; font-size: 16px; color: var(--accent); }
-.from { margin: 6px 0 0; font-family: var(--display); font-style: italic; font-size: 20px; color: var(--ink); }
+.from { margin: 28px 0 0; font-family: var(--display); font-style: italic; font-size: 20px; color: var(--ink); }
 
 .scroll-cue {
   display: flex; flex-direction: column; align-items: center; gap: 6px;

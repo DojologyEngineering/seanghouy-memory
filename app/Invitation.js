@@ -121,7 +121,6 @@ export default function Invitation({ messages }) {
                 <span>{site.died}</span>
               </div>
               <p className="letter">{site.letter}</p>
-              <p className="blessing-km" lang="km">{site.blessingKhmer}</p>
               <p className="from">{site.from}</p>
             </div>
           </article>
