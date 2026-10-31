@@ -109,8 +109,6 @@ export default function Invitation({ messages }) {
         <main className="opened">
           <article className="letter-card">
             <div className="frame">
-              <span className="org-logo" role="img" aria-label="Australia Awards" />
-              <p className="eyebrow">Cambodia · Scholar cohort 2027</p>
               <p className="km-title" lang="km">{site.condolenceKhmer}</p>
               <p className="en-title">{site.condolence}</p>
               <Lotus className="lotus big" />

@@ -44,18 +44,6 @@ img { display: block; max-width: 100%; }
 [lang="km"] { font-family: var(--khmer); }
 
 /* Shared bits */
-.org-logo {
-  display: block; margin: 0 auto;
-  width: 96px; aspect-ratio: 276 / 193;
-  background: var(--ink-soft);
-  -webkit-mask: url(/australia-awards.png) center / contain no-repeat;
-  mask: url(/australia-awards.png) center / contain no-repeat;
-  opacity: 0.8;
-}
-.eyebrow {
-  margin: 10px 0 0; font-size: 10.5px; font-weight: 500;
-  letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted);
-}
 .km-line { margin: 0; font-size: 15px; color: var(--muted); letter-spacing: 0.02em; }
 .lotus { width: 40px; height: 24px; }
 .lotus path { fill: none; stroke: var(--accent); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; }
@@ -163,7 +151,7 @@ img { display: block; max-width: 100%; }
   padding: 48px 32px 44px;
   text-align: center;
 }
-.km-title { margin: 30px 0 0; font-size: 22px; font-weight: 400; color: var(--ink); }
+.km-title { margin: 0; font-size: 22px; font-weight: 400; color: var(--ink); }
 .en-title { margin: 0; font-family: var(--display); font-style: italic; font-size: 22px; color: var(--ink-soft); }
 .lotus.big { width: 64px; height: 38px; margin: 26px auto 6px; display: block; }
 .memory-of { margin: 18px 0 0; font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
@@ -245,7 +233,7 @@ img { display: block; max-width: 100%; }
 /* Form and admin pages */
 .wrap { position: relative; z-index: 2; max-width: 720px; margin: 0 auto; padding: 64px 16px 96px; }
 .hero { text-align: center; }
-.hero .km-line { margin-top: 28px; }
+.hero .km-line { margin-top: 8px; }
 .hero h1 {
   margin: 6px 0 0; font-family: var(--display); font-weight: 400;
   font-size: clamp(40px, 9vw, 62px); line-height: 1.02; letter-spacing: -0.01em;
