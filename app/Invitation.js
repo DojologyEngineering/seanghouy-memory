@@ -1,16 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { site } from "@/lib/config";
 import MessageCard from "./MessageCard";
 import Ornament, { Lotus } from "./Ornament";
 
-// sealed → opening (flap lifts, card rises, petals fall) → open (card + messages)
+// sealed → opening (seal lifts, flap folds back, letter slides out)
+//        → reveal (the letter grows into the full card while the envelope sinks away)
+//        → open (card + messages, page scrolls)
+const T_REVEAL = 2050;
+const T_DONE = 3500;
 export default function Invitation({ messages }) {
   const [stage, setStage] = useState("sealed");
   const [muted, setMuted] = useState(false);
   const [petals, setPetals] = useState([]);
   const audioRef = useRef(null);
+  const letterRef = useRef(null);
+  const cardRef = useRef(null);
+  const fromRect = useRef(null);
+  const envRef = useRef(null);
+  const fromClip = useRef(null);
 
   useEffect(() => {
     setPetals(
@@ -29,6 +38,30 @@ export default function Invitation({ messages }) {
     document.body.classList.toggle("locked", stage !== "open");
   }, [stage]);
 
+  // FLIP: start the real card exactly where the envelope's letter is, then let it grow into place.
+  useLayoutEffect(() => {
+    if (stage !== "reveal" || !cardRef.current || !fromRect.current) return;
+    const from = fromRect.current;
+    const to = cardRef.current.getBoundingClientRect();
+    cardRef.current.animate(
+      [
+        {
+          transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})`,
+          boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
+        },
+        { transform: "none", boxShadow: "0 40px 90px rgba(0,0,0,0.55)" },
+      ],
+      { duration: 1350, easing: "cubic-bezier(0.65, 0, 0.25, 1)", fill: "backwards" }
+    );
+    // The lower part of the letter was still tucked in the pocket: start with that part hidden.
+    if (fromClip.current) {
+      cardRef.current.animate(
+        [{ clipPath: fromClip.current }, { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)" }],
+        { duration: 650, easing: "cubic-bezier(0.33, 1, 0.68, 1)", fill: "backwards" }
+      );
+    }
+  }, [stage]);
+
   function open() {
     if (stage !== "sealed") return;
     const a = audioRef.current;
@@ -42,9 +75,24 @@ export default function Invitation({ messages }) {
         if (v >= 0.55) clearInterval(fade);
       }, 120);
     }
-    setStage("opening");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setTimeout(() => setStage("open"), reduce ? 50 : 2600);
+    if (reduce) return setStage("open");
+    window.scrollTo(0, 0);
+    setStage("opening");
+    setTimeout(() => {
+      const L = letterRef.current?.getBoundingClientRect();
+      const E = envRef.current?.getBoundingClientRect();
+      if (L) fromRect.current = L;
+      if (L && E) {
+        // The pocket's V runs from the envelope's top corners to its centre at 55% height.
+        const cx = E.left + E.width / 2, cy = E.top + E.height * 0.55;
+        const yAt = (x) => (x < cx ? E.top + ((x - E.left) / (cx - E.left)) * (cy - E.top) : cy - ((x - cx) / (E.right - cx)) * (cy - E.top));
+        const pct = (y) => `${(((y - L.top) / L.height) * 100).toFixed(2)}%`;
+        fromClip.current = `polygon(0% 0%, 100% 0%, 100% ${pct(yAt(L.right))}, 50% ${pct(cy)}, 0% ${pct(yAt(L.left))})`;
+      }
+      setStage("reveal");
+    }, T_REVEAL);
+    setTimeout(() => setStage("open"), T_DONE);
   }
 
   function toggleMute() {
@@ -80,15 +128,16 @@ export default function Invitation({ messages }) {
       )}
 
       {stage !== "open" && (
-        <section className={`stage ${stage}`}>
+        <section className={`stage ${stage}`} aria-hidden={stage !== "sealed"}>
+          <div className="glow" aria-hidden="true" />
           <div className="addressee">
             <p className="km-line" lang="km">{site.toKhmer}</p>
             <h1>{site.daughter}</h1>
           </div>
 
-          <div className="envelope">
+          <div className="envelope" ref={envRef}>
             <div className="env-back" />
-            <div className="env-letter">
+            <div className="env-letter" ref={letterRef}>
               <Lotus className="lotus" />
               <span>{site.condolence}</span>
             </div>
@@ -105,9 +154,9 @@ export default function Invitation({ messages }) {
         </section>
       )}
 
-      {stage === "open" && (
+      {(stage === "reveal" || stage === "open") && (
         <main className="opened">
-          <article className="letter-card">
+          <article className="letter-card" ref={cardRef}>
             <div className="frame">
               <p className="km-title" lang="km">{site.condolenceKhmer}</p>
               <p className="en-title">{site.condolence}</p>
